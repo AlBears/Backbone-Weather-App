@@ -1,1 +1,1 @@
-Basic Backbone Weather App with fetching data from API and autorefreshing without reloading browser.
+Basic Backbone Weather App with fetching data from API and autorefreshing without reloading browser. I use ipinfo.io to verify current location.
