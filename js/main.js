@@ -1,12 +1,11 @@
 
-var Weather = Backbone.Model.extend({
-
-	url: "http://api.openweathermap.org/data/2.5/weather?lat=35&lon=139&units=metric&APPID=",
+var Weather = Backbone.Model.extend({ 
+	
+	url: "http://api.openweathermap.org/data/2.5/weather?units=metric&APPID=",
 	key: "",
 
 	initialize: function(){
-		this.setUrl();
-		this.fetch();
+		this.getLocation();
 		var self = this;
         setInterval(function() {
         self.fetch();
@@ -14,8 +13,24 @@ var Weather = Backbone.Model.extend({
 
 	},
 
-	setUrl: function(){
-		this.url = this.url + this.key;
+	gotLocation: function(data) {
+		var coord = data.loc.split(',');
+		var location = {lat:coord[0], lon:coord[1]};
+		this.setUrl(location);
+		
+	},
+
+	getLocation: function(){
+		var self = this;
+		$.getJSON('http://ipinfo.io', function(location){
+		self.gotLocation(location)
+		});
+		
+	},
+
+	setUrl: function(location){
+		this.url = this.url + this.key +"&lat="+location.lat+"&lon="+location.lon;
+		this.fetch();
 	},
 
 	fetch: function(options){
@@ -28,7 +43,13 @@ var Weather = Backbone.Model.extend({
 
 	parse: function(data){
 		console.log(data);
-		return data.main;
+		return {
+			temp: data.main.temp,
+			name: data.name,
+			pressure: data.main.pressure,
+			description: data.weather[0].description,
+			humidity: data.main.humidity
+		}
 	}
 
 });
@@ -44,10 +65,10 @@ var WeatherView = Backbone.View.extend({
 		this.model.bind('change', this.render);
 		this.render();
 
+
 	},
 
 	render: function(){
-
 		var html = this.template({'weather': this.model.toJSON()});
 		this.$el.html(html);
 		return this;	
