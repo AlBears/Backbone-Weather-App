@@ -13,19 +13,13 @@ var Weather = Backbone.Model.extend({
 
 	},
 
-	gotLocation: function(data) {
-		var coord = data.loc.split(',');
-		var location = {lat:coord[0], lon:coord[1]};
-		this.setUrl(location);
-		
-	},
-
 	getLocation: function(){
 		var self = this;
-		$.getJSON('http://ipinfo.io', function(location){
-		self.gotLocation(location)
-		});
-		
+		$.getJSON('http://ipinfo.io', function(data){
+		var coord = data.loc.split(',');
+		var location = {lat:coord[0], lon:coord[1]};
+		self.setUrl(location);
+		});	
 	},
 
 	setUrl: function(location){
